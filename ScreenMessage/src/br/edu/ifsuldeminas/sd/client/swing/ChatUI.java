@@ -6,6 +6,9 @@ import br.edu.ifsuldeminas.sd.chat.MessageContainer;
 import br.edu.ifsuldeminas.sd.chat.Sender;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,28 +16,59 @@ import java.awt.event.ActionListener;
 public class ChatUI {
     private static final String KEY_TO_EXIT = "q";
     private JFrame frame;
-    private JTextArea messageArea;
+    private JTextPane messageArea;
     private JTextField messageInput;
     private JButton sendButton;
     private Sender sender;
-    private String from;
+    private JTextField nameField;
+    private JTextField localPortField;
+    private JTextField serverPortField;
+    private JButton connectButton;
 
-    public ChatUI(Sender sender, String from) {
-        this.sender = sender;
-        this.from = from;
+    public ChatUI() {
         initializeUI();
     }
 
     private void initializeUI() {
         frame = new JFrame("Chat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(600, 400);
 
-        messageArea = new JTextArea();
+        // Top panel with user info
+        JPanel topPanel = new JPanel(new GridLayout(2, 4, 10, 10));
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        
+        JLabel nameLabel = new JLabel("Name:");
+        JLabel localPortLabel = new JLabel("Local Port:");
+        JLabel serverPortLabel = new JLabel("Remote Port:");
+
+        nameField = new JTextField();
+        localPortField = new JTextField();
+        serverPortField = new JTextField();
+
+        connectButton = new JButton("Connect");
+        connectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                connect();
+            }
+        });
+
+        topPanel.add(nameLabel);
+        topPanel.add(nameField);
+        topPanel.add(localPortLabel);
+        topPanel.add(localPortField);
+        topPanel.add(serverPortLabel);
+        topPanel.add(serverPortField);
+        topPanel.add(new JLabel());
+        topPanel.add(connectButton);
+
+        messageArea = new JTextPane();
         messageArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(messageArea);
 
         messageInput = new JTextField();
+        messageInput.setEnabled(false);
         messageInput.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -43,6 +77,7 @@ public class ChatUI {
         });
 
         sendButton = new JButton("Send");
+        sendButton.setEnabled(false);
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -50,13 +85,45 @@ public class ChatUI {
             }
         });
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(messageInput, BorderLayout.CENTER);
-        panel.add(sendButton, BorderLayout.EAST);
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(messageInput, BorderLayout.CENTER);
+        bottomPanel.add(sendButton, BorderLayout.EAST);
 
+        frame.getContentPane().add(topPanel, BorderLayout.NORTH);
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-        frame.getContentPane().add(panel, BorderLayout.SOUTH);
+        frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
+
+        // Modern look and feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void connect() {
+        String from = nameField.getText();
+        int localPort = Integer.parseInt(localPortField.getText());
+        int serverPort = Integer.parseInt(serverPortField.getText());
+
+        try {
+            SwingMessageContainer messageContainer = new SwingMessageContainer();
+            sender = ChatFactory.build("localhost", serverPort, localPort, messageContainer);
+            messageContainer.setChatUI(this);
+
+            // Disable input fields and connect button
+            nameField.setEnabled(false);
+            localPortField.setEnabled(false);
+            serverPortField.setEnabled(false);
+            connectButton.setEnabled(false);
+
+            // Enable chat input and send button
+            messageInput.setEnabled(true);
+            sendButton.setEnabled(true);
+        } catch (ChatException e) {
+            JOptionPane.showMessageDialog(frame, "Error initializing chat: " + e.getMessage());
+        }
     }
 
     private void sendMessage() {
@@ -66,9 +133,9 @@ public class ChatUI {
         }
         if (!message.trim().isEmpty()) {
             try {
-                message = String.format("%s%s%s", from, MessageContainer.FROM, message);
-                sender.send(message);
-                displayMessage(message);  // Exibe a mensagem no terminal local
+                String formattedMessage = String.format("%s%s%s", nameField.getText(), MessageContainer.FROM, message);
+                sender.send(formattedMessage);
+                displayMessage(formattedMessage, Color.BLACK); // Local message in black
                 messageInput.setText("");
             } catch (ChatException chatException) {
                 JOptionPane.showMessageDialog(frame, "Error sending message: " + chatException.getMessage());
@@ -76,24 +143,23 @@ public class ChatUI {
         }
     }
 
-    public void displayMessage(String message) {
-        messageArea.append(message + "\n");
+    public void displayMessage(String message, Color color) {
+        try {
+            StyledDocument doc = messageArea.getStyledDocument();
+            Style style = messageArea.addStyle("Style", null);
+            StyleConstants.setForeground(style, color);
+            doc.insertString(doc.getLength(), message + "\n", style);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
-        String serverName = "localhost";
-        int localPort = Integer.parseInt(JOptionPane.showInputDialog("Enter local port:"));
-        int serverPort = Integer.parseInt(JOptionPane.showInputDialog("Enter server port:"));
-        String from = JOptionPane.showInputDialog("Enter your name:");
-
-        try {
-            SwingMessageContainer messageContainer = new SwingMessageContainer();
-            Sender sender = ChatFactory.build(serverName, serverPort, localPort, messageContainer);
-            ChatUI chatUI = new ChatUI(sender, from);
-            messageContainer.setChatUI(chatUI);
-        } catch (ChatException e) {
-            JOptionPane.showMessageDialog(null, "Error initializing chat: " + e.getMessage());
-            System.exit(1);
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new ChatUI();
+            }
+        });
     }
 }
