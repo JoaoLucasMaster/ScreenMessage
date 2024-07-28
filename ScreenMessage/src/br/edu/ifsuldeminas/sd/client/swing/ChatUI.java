@@ -8,7 +8,6 @@ import br.edu.ifsuldeminas.sd.chat.Sender;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,21 +31,41 @@ public class ChatUI {
     private void initializeUI() {
         frame = new JFrame("Chat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(700, 400);
 
-        // Top panel with user info
-        JPanel topPanel = new JPanel(new GridLayout(2, 4, 10, 10));
-        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        
-        JLabel nameLabel = new JLabel("Name:");
-        JLabel localPortLabel = new JLabel("Local Port:");
-        JLabel serverPortLabel = new JLabel("Remote Port:");
+        // Main panel with rounded corners
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBackground(new Color(242, 242, 242));
+        mainPanel.setBorder(new RoundedBorder(10));
 
-        nameField = new JTextField();
-        localPortField = new JTextField();
-        serverPortField = new JTextField();
+        // Top panel with user info - Flat design
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setBackground(Color.WHITE);
 
-        connectButton = new JButton("Connect");
+        JLabel nameLabel = new JLabel("Nome:");
+        nameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        nameField = new JTextField(15);
+        nameField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+        JLabel localPortLabel = new JLabel("Porta Local:");
+        localPortLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        localPortField = new JTextField(5);
+        localPortField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+        JLabel serverPortLabel = new JLabel("Porta Remota:");
+        serverPortLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        serverPortField = new JTextField(5);
+        serverPortField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+        connectButton = new JButton(" ");
+        connectButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        connectButton.setAlignmentY(0.0f);
+        connectButton.setIconTextGap(5);
+        connectButton.setIcon(new ImageIcon("C:\\Users\\pepej\\Downloads\\ScreenMessage-main\\ScreenMessage-main\\ScreenMessage\\img\\Github-Octicons-Git-compare-16.16.png"));
+        connectButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        connectButton.setBackground(new Color(66, 133, 244)); // Light blue
+        connectButton.setForeground(Color.WHITE);
         connectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,24 +79,25 @@ public class ChatUI {
         topPanel.add(localPortField);
         topPanel.add(serverPortLabel);
         topPanel.add(serverPortField);
-        topPanel.add(new JLabel());
         topPanel.add(connectButton);
 
+        // Message area with clean borders
         messageArea = new JTextPane();
         messageArea.setEditable(false);
+        messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        messageArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
         JScrollPane scrollPane = new JScrollPane(messageArea);
 
+        // Message input and send button - Flat design
         messageInput = new JTextField();
         messageInput.setEnabled(false);
-        messageInput.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
-
-        sendButton = new JButton("Send");
+        messageInput.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        sendButton = new JButton("");
+        sendButton.setIcon(new ImageIcon("C:\\Users\\pepej\\Downloads\\ScreenMessage-main\\ScreenMessage-main\\ScreenMessage\\img\\Colebemis-Feather-Corner-right-up.16.png"));
         sendButton.setEnabled(false);
+        sendButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        sendButton.setBackground(new Color(66, 133, 244));
+        sendButton.setForeground(Color.WHITE);
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -86,12 +106,15 @@ public class ChatUI {
         });
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(Color.WHITE);
+
         bottomPanel.add(messageInput, BorderLayout.CENTER);
         bottomPanel.add(sendButton, BorderLayout.EAST);
 
-        frame.getContentPane().add(topPanel, BorderLayout.NORTH);
-        frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-        frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        frame.getContentPane().add(mainPanel);
         frame.setVisible(true);
 
         // Modern look and feel
@@ -157,7 +180,7 @@ public class ChatUI {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void run() {
+            public void run(){
                 new ChatUI();
             }
         });
