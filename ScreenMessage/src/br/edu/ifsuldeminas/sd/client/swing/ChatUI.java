@@ -32,7 +32,9 @@ public class ChatUI {
         frame = new JFrame("Chat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(700, 400);
-
+        ImageIcon iconeEnviar = new ImageIcon(getClass().getResource("/img/enviar.png"));
+        ImageIcon iconeConectar = new ImageIcon(getClass().getResource("/img/conectar.png"));
+        
         // Main panel with rounded corners
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBackground(new Color(242, 242, 242));
@@ -62,7 +64,7 @@ public class ChatUI {
         connectButton.setHorizontalTextPosition(SwingConstants.CENTER);
         connectButton.setAlignmentY(0.0f);
         connectButton.setIconTextGap(5);
-        connectButton.setIcon(new ImageIcon("C:\\Users\\pepej\\Downloads\\ScreenMessage-main\\ScreenMessage-main\\ScreenMessage\\img\\Github-Octicons-Git-compare-16.16.png"));
+        connectButton.setIcon(iconeConectar);
         connectButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         connectButton.setBackground(new Color(66, 133, 244)); // Light blue
         connectButton.setForeground(Color.WHITE);
@@ -93,7 +95,7 @@ public class ChatUI {
         messageInput.setEnabled(false);
         messageInput.setFont(new Font("SansSerif", Font.PLAIN, 14));
         sendButton = new JButton("");
-        sendButton.setIcon(new ImageIcon("C:\\Users\\pepej\\Downloads\\ScreenMessage-main\\ScreenMessage-main\\ScreenMessage\\img\\Colebemis-Feather-Corner-right-up.16.png"));
+        sendButton.setIcon(iconeEnviar);
         sendButton.setEnabled(false);
         sendButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         sendButton.setBackground(new Color(66, 133, 244));
