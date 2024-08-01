@@ -35,12 +35,10 @@ public class ChatUI {
         ImageIcon iconeEnviar = new ImageIcon(getClass().getResource("/img/enviar.png"));
         ImageIcon iconeConectar = new ImageIcon(getClass().getResource("/img/conectar.png"));
         
-        // Main panel with rounded corners
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBackground(new Color(242, 242, 242));
         mainPanel.setBorder(new RoundedBorder(10));
 
-        // Top panel with user info - Flat design
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setBackground(Color.WHITE);
@@ -83,14 +81,12 @@ public class ChatUI {
         topPanel.add(serverPortField);
         topPanel.add(connectButton);
 
-        // Message area with clean borders
         messageArea = new JTextPane();
         messageArea.setEditable(false);
         messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         messageArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
         JScrollPane scrollPane = new JScrollPane(messageArea);
 
-        // Message input and send button - Flat design
         messageInput = new JTextField();
         messageInput.setEnabled(false);
         messageInput.setFont(new Font("SansSerif", Font.PLAIN, 14));
@@ -119,7 +115,6 @@ public class ChatUI {
         frame.getContentPane().add(mainPanel);
         frame.setVisible(true);
 
-        // Modern look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -137,13 +132,11 @@ public class ChatUI {
             sender = ChatFactory.build("localhost", serverPort, localPort, messageContainer);
             messageContainer.setChatUI(this);
 
-            // Disable input fields and connect button
             nameField.setEnabled(false);
             localPortField.setEnabled(false);
             serverPortField.setEnabled(false);
             connectButton.setEnabled(false);
 
-            // Enable chat input and send button
             messageInput.setEnabled(true);
             sendButton.setEnabled(true);
         } catch (ChatException e) {
